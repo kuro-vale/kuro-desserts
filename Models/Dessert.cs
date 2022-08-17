@@ -21,7 +21,7 @@ public class Dessert
     /// Price of the dessert
     /// </summary>
     /// <example>10</example>
-    [Required, Range(0, 100, ErrorMessage = "Please enter a valid and fair price")]
+    [Required, Range(0, 100, ErrorMessage = "Please enter a valid and fair price (0..100)")]
     public int Price { get; set; }
 
     /// <summary>
