@@ -20,4 +20,8 @@
       <_ContentIncludedByDefault Remove="wwwroot\css\open-iconic\README.md" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    </ItemGroup>
+
 </Project>
