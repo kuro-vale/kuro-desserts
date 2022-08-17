@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace kuro_desserts.Models;
 
 /// <summary>
 /// Represent a dessert for user to order
 /// </summary>
+[Index(nameof(Name), IsUnique = true)]
 public class Dessert
 {
     [Key] public Guid Id { get; set; }

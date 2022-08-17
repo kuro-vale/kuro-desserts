@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace kuro_desserts.Controllers;
 
 /// <summary>
 /// Change the dessert flavor, yummy
 /// </summary>
+[Index(nameof(Name), IsUnique = true)]
 public class Flavor
 {
     [Key] public Guid Id { get; set; }

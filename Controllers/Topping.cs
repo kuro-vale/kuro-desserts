@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace kuro_desserts.Controllers;
 
 /// <summary>
 /// A topping for the dessert, WHAT ELSE DO YOU WANT?
 /// </summary>
+[Index(nameof(Name), IsUnique = true)]
 public class Topping
 {
     [Key] public Guid Id { get; set; }
