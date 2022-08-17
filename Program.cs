@@ -14,7 +14,7 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v1", new OpenApiInfo
     {
         Version = "v1",
-        Title = "Kuro Dessert API",
+        Title = "Kuro Desserts API",
         Description = "API for the kuro desserts' blazor server, this API was made for learning purposes only"
     });
     var xmlFileName = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
