@@ -25,4 +25,6 @@ public class User
     /// <example>10</example>
     [Required]
     public int Price { get; set; }
+
+    public ICollection<Address>? Addresses { get; set; }
 }

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace kuro_desserts.Models;
 
@@ -31,4 +32,6 @@ public class Address
     /// <example>12345</example>
     [RegularExpression(@"^([0-9]{5})$", ErrorMessage = "Please use a valid Postal Code with five numbers.")]
     public string? PostalCode { get; set; }
+
+    [ForeignKey("UserId")] private Guid UserId { get; set; }
 }
