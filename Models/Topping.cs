@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
-namespace kuro_desserts.Controllers;
+namespace kuro_desserts.Models;
 
 /// <summary>
 /// A topping for the dessert, WHAT ELSE DO YOU WANT?
