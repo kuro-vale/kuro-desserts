@@ -13,6 +13,7 @@ public class Order
 
     [ForeignKey("FlavorId")] public Guid FlavorId { get; set; }
 
+    public Flavor? Flavor { get; set; }
 
     [ForeignKey("CartId")] public Guid CartId { get; set; }
 

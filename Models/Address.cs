@@ -33,5 +33,7 @@ public class Address
     [RegularExpression(@"^([0-9]{5})$", ErrorMessage = "Please use a valid Postal Code with five numbers.")]
     public string? PostalCode { get; set; }
 
-    [ForeignKey("UserId")] private Guid UserId { get; set; }
+    [ForeignKey("UserId")] public Guid UserId { get; set; }
+
+    public User? User { get; set; }
 }

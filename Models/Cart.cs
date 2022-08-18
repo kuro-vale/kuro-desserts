@@ -11,6 +11,12 @@ public class Cart
 
     [ForeignKey("UserId")] public Guid UserId { get; set; }
 
+    public User? User { get; set; }
+
+    [ForeignKey("AddressId")] public Guid AddressId { get; set; }
+
+    public Address? Address { get; set; }
+
     public decimal GetTotalPrice()
     {
         return Orders?.Sum(order => order.GetTotalPrice()) ?? 0;

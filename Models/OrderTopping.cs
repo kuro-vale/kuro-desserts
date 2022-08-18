@@ -5,7 +5,9 @@ namespace kuro_desserts.Models;
 
 public class OrderTopping
 {
-    [Key, ForeignKey("OrderId")] public Guid OrderId { get; set; }
+    [Key] public Guid Id { get; set; }
+    
+    [ForeignKey("OrderId")] public Guid OrderId { get; set; }
 
     [ForeignKey("ToppingId")] public Guid ToppingId { get; set; }
 
