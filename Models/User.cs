@@ -7,7 +7,7 @@ namespace kuro_desserts.Models;
 /// Model used for authentication
 /// </summary>
 [Index(nameof(Username), IsUnique = true)]
-public class User
+public class User : Auditable
 {
     [Key] public Guid Id { get; set; }
 

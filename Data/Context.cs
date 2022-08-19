@@ -24,4 +24,23 @@ public class Context : DbContext
     public Context(DbContextOptions<Context> options) : base(options)
     {
     }
+
+    public override int SaveChanges()
+    {
+        var entries = ChangeTracker
+            .Entries()
+            .Where(e => e.Entity is Auditable && e.State is EntityState.Added or EntityState.Modified);
+
+        foreach (var entityEntry in entries)
+        {
+            ((Auditable)entityEntry.Entity).UpdatedAt = DateTime.Now;
+
+            if (entityEntry.State == EntityState.Added)
+            {
+                ((Auditable)entityEntry.Entity).CreatedAt = DateTime.Now;
+            }
+        }
+
+        return base.SaveChanges();
+    }
 }
