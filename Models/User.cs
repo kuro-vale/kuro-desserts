@@ -23,8 +23,10 @@ public class User
     /// Your password
     /// </summary>
     /// <example>10</example>
-    [Required]
-    public int Price { get; set; }
+    [Required,
+     RegularExpression(@"^(?=.*\d)(?=.*[a-z])(?=.*[a-zA-Z]).{3,}$",
+         ErrorMessage = "Password must have a number and 3 characters minimum")]
+    public string? Password { get; set; }
 
     public ICollection<Address>? Addresses { get; set; }
 }
