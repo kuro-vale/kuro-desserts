@@ -1,12 +1,18 @@
 using System.Reflection;
+using kuro_desserts.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+var serverVersion = new MariaDbServerVersion(new Version(10, 8, 3));
+var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 // API services
+builder.Services.AddDbContext<Context>(optionsBuilder =>
+    optionsBuilder.UseMySql(connectionString!, serverVersion).LogTo(Console.WriteLine, LogLevel.Information));
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -27,7 +33,6 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
