@@ -52,4 +52,15 @@ app.MapControllers();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
+// Create and seed Database
+var scopeFactory = app.Services.GetRequiredService<IServiceScopeFactory>();
+using (var scope = scopeFactory.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<Context>();
+    if (db.Database.EnsureCreated())
+    {
+        SeedData.Initialize(db);
+    }
+}
+
 app.Run();
