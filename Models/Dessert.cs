@@ -7,7 +7,7 @@ namespace kuro_desserts.Models;
 /// Represent a dessert for user to order
 /// </summary>
 [Index(nameof(Name), IsUnique = true)]
-public class Dessert
+public class Dessert : Auditable
 {
     [Key] public Guid Id { get; set; }
 

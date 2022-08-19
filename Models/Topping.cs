@@ -7,7 +7,7 @@ namespace kuro_desserts.Models;
 /// A topping for the dessert, WHAT ELSE DO YOU WANT?
 /// </summary>
 [Index(nameof(Name), IsUnique = true)]
-public class Topping
+public class Topping : Auditable
 {
     [Key] public Guid Id { get; set; }
 

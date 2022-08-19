@@ -7,7 +7,7 @@ namespace kuro_desserts.Models;
 /// Change the dessert flavor, yummy
 /// </summary>
 [Index(nameof(Name), IsUnique = true)]
-public class Flavor
+public class Flavor : Auditable
 {
     [Key] public Guid Id { get; set; }
 
