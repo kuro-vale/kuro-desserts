@@ -5,21 +5,21 @@ namespace kuro_desserts.Data;
 
 public class Context : DbContext
 {
-    public DbSet<Address>? Addresses { get; set; }
+    public DbSet<Address> Addresses { get; set; } = null!;
 
-    public DbSet<Cart>? Carts { get; set; }
+    public DbSet<Cart> Carts { get; set; } = null!;
 
-    public DbSet<Dessert>? Desserts { get; set; }
+    public DbSet<Dessert> Desserts { get; set; } = null!;
 
-    public DbSet<Flavor>? Flavors { get; set; }
+    public DbSet<Flavor> Flavors { get; set; } = null!;
 
-    public DbSet<Order>? Orders { get; set; }
+    public DbSet<Order> Orders { get; set; } = null!;
 
-    public DbSet<OrderTopping>? OrderToppings { get; set; }
+    public DbSet<OrderTopping> OrderToppings { get; set; } = null!;
 
-    public DbSet<Topping>? Toppings { get; set; }
+    public DbSet<Topping> Toppings { get; set; } = null!;
 
-    public DbSet<User>? Users { get; set; }
+    public DbSet<User> Users { get; set; } = null!;
 
     public Context(DbContextOptions<Context> options) : base(options)
     {

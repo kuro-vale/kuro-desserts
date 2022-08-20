@@ -1,10 +1,12 @@
-﻿namespace kuro_desserts.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace kuro_desserts.Models;
 
 public abstract class Auditable
 {
-    public DateTime CreatedAt { get; set; }
-    
-    public DateTime UpdatedAt { get; set; }
+    [JsonIgnore] public DateTime CreatedAt { get; set; }
 
-    public bool IsDeleted { get; set; } = false;
+    [JsonIgnore] public DateTime UpdatedAt { get; set; }
+
+    [JsonIgnore] public bool IsDeleted { get; set; } = false;
 }

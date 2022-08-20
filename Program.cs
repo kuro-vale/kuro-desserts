@@ -12,7 +12,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 // API services
 builder.Services.AddDbContext<Context>(optionsBuilder =>
-    optionsBuilder.UseMySql(connectionString!, serverVersion).LogTo(Console.WriteLine, LogLevel.Information));
+    optionsBuilder.UseMySql(connectionString!, serverVersion));
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
