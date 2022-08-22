@@ -65,7 +65,7 @@ public class DessertsController : ControllerBase
         }
         catch (DbUpdateException)
         {
-            return BadRequest($"A dessert with the name '{dessert.Name}' already exist");
+            return BadRequest($"A dessert with the name '{dessert.Name}' already exists");
         }
 
         return Ok(dessert);

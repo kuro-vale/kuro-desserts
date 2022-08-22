@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 
 namespace kuro_desserts.Models;
@@ -9,7 +10,7 @@ namespace kuro_desserts.Models;
 [Index(nameof(Username), IsUnique = true)]
 public class User : Auditable
 {
-    [Key] public Guid Id { get; set; }
+    [JsonIgnore] [Key] public Guid Id { get; set; }
 
     /// <summary>
     /// Your username
@@ -22,11 +23,11 @@ public class User : Auditable
     /// <summary>
     /// Your password
     /// </summary>
-    /// <example>10</example>
+    /// <example>VerySecure1</example>
     [Required,
      RegularExpression(@"^(?=.*\d)(?=.*[a-z])(?=.*[a-zA-Z]).{3,}$",
          ErrorMessage = "Password must have a number and 3 characters minimum")]
     public string? Password { get; set; }
 
-    public ICollection<Address>? Addresses { get; set; }
+    [JsonIgnore] public ICollection<Address>? Addresses { get; set; }
 }
