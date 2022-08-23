@@ -1,5 +1,6 @@
 using System.Reflection;
 using kuro_desserts.Data;
+using kuro_desserts.Middlewares;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -45,6 +46,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseMiddleware<JwtMiddleware>();
 
 // API Endpoints
 app.MapControllers();
