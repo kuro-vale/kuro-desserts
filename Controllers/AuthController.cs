@@ -57,7 +57,7 @@ public class AuthController : ControllerBase
     /// <response code="200">Success</response>
     /// <response code="401">Unauthorized</response>
     [HttpPost("login")]
-    public IActionResult Login([FromBody] User loginRequest)
+    public IActionResult Login([FromBody] LoginRequest loginRequest)
     {
         var user = _context.Users.SingleOrDefault(u => u.Username == loginRequest.Username);
 

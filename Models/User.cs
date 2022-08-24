@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,4 +31,37 @@ public class User : Auditable
     public string? Password { get; set; }
 
     [JsonIgnore] public ICollection<Address>? Addresses { get; set; }
+
+    /// <summary>
+    /// Role of the user can be Admin(0) or Customer(1)
+    /// </summary>
+    /// <example>1</example>
+    public Roles Role { get; set; }
+
+    public enum Roles
+    {
+        Admin,
+        Customer
+    }
+}
+
+[NotMapped]
+public class LoginRequest
+{
+    /// <summary>
+    /// Your username
+    /// </summary>
+    /// <example>epic_user</example>
+    [Required,
+     RegularExpression(@"^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$", ErrorMessage = "Please use a valid username")]
+    public string? Username { get; set; }
+
+    /// <summary>
+    /// Your password
+    /// </summary>
+    /// <example>VerySecure1</example>
+    [Required,
+     RegularExpression(@"^(?=.*\d)(?=.*[a-z])(?=.*[a-zA-Z]).{3,}$",
+         ErrorMessage = "Password must have a number and 3 characters minimum")]
+    public string? Password { get; set; }
 }
