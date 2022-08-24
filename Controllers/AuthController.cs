@@ -50,7 +50,7 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Create a jwt token for a current user
+    /// Create a new JWT token
     /// </summary>
     /// <param name="loginRequest">Verify user credentials</param>
     /// <returns>JWT token</returns>

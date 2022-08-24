@@ -1,6 +1,7 @@
 using System.Reflection;
 using kuro_desserts.Data;
 using kuro_desserts.Middlewares;
+using kuro_desserts.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -26,6 +27,15 @@ builder.Services.AddSwaggerGen(options =>
     });
     var xmlFileName = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFileName));
+    options.AddSecurityDefinition("KuroSecurityDefinition", new OpenApiSecurityScheme
+    {
+        Description = "Enter your JWT token",
+        Type = SecuritySchemeType.Http,
+        In = ParameterLocation.Header,
+        Scheme = "Bearer",
+        BearerFormat = "JWT"
+    });
+    options.OperationFilter<AuthenticationRequirementsOperationFilter>();
 });
 
 var app = builder.Build();
