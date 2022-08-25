@@ -36,7 +36,7 @@ public class User : Auditable
     /// Role of the user can be Admin(0) or Customer(1)
     /// </summary>
     /// <example>1</example>
-    public Roles Role { get; set; }
+    public Roles Role { get; set; } = Roles.Customer;
 
     public enum Roles
     {

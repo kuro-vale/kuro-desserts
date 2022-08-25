@@ -13,7 +13,7 @@ namespace kuro_desserts.Migrations
                 table: "Users",
                 type: "int",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 1);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
