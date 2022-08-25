@@ -41,7 +41,10 @@ public class JwtMiddleware
             var jwtToken = (JwtSecurityToken)validatedToken;
             var userId = Guid.Parse(jwtToken.Claims.First(x => x.Type == "sub").Value);
 
-            context.Items["User"] = db.Users.Find(userId);
+            var user = db.Users.Find(userId);
+            if (user!.IsDeleted) return;
+
+            context.Items["User"] = user;
         }
         catch
         {

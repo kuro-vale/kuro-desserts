@@ -68,6 +68,60 @@ public class AuthController : ControllerBase
         return Ok(token);
     }
 
+    /// <summary>
+    /// Update your user
+    /// </summary>
+    /// <param name="userRequest">Update your username and password</param>
+    /// <response code="401">Unauthorized</response>
+    [HttpPut]
+    public IActionResult UpdateUser([FromBody] User userRequest)
+    {
+        var user = (User?)HttpContext.Items["User"];
+
+        if (user == null)
+        {
+            return Unauthorized("Please login to do this");
+        }
+
+        user.Username = userRequest.Username;
+        user.Password = BCrypt.Net.BCrypt.HashPassword(userRequest.Password);
+
+        _context.Users.Update(user);
+        try
+        {
+            _context.SaveChanges();
+        }
+        catch (DbUpdateException)
+        {
+            return BadRequest($"A user with the username {user.Username} already exists");
+        }
+
+        return Ok("Success");
+    }
+
+    /// <summary>
+    /// Delete your user
+    /// </summary>
+    /// <response code="401">Unauthorized</response>
+    [HttpDelete]
+    public IActionResult DeleteUser()
+    {
+        var user = (User?)HttpContext.Items["User"];
+
+        if (user == null)
+        {
+            return Unauthorized("Please login to do this");
+        }
+
+        user.IsDeleted = true;
+
+        _context.Users.Update(user);
+        _context.SaveChanges();
+
+        return NoContent();
+    }
+
+
     private static string GenerateToken(User user)
     {
         var now = DateTime.UtcNow;
