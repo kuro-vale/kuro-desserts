@@ -54,9 +54,13 @@ public class DessertsController : ControllerBase
     /// <param name="dessert">An ID will be automatically generated, you don't need to enter one</param>
     /// <response code="200">Success</response>
     /// <response code="400">Bad Request</response>
+    /// <response code="401">Unauthorized</response>
+    /// <response code="403">Forbidden</response>
     [HttpPost]
     public IActionResult Store([FromBody] Dessert dessert)
     {
+        if (IsAdmin(out var statusCode)) return statusCode;
+
         dessert.Id = new Guid();
         _context.Desserts.Add(dessert);
         try
@@ -79,9 +83,13 @@ public class DessertsController : ControllerBase
     /// <response code="200">Success</response>
     /// <response code="404">Not Found</response>
     /// <response code="400">Bad Request</response>
+    /// <response code="401">Unauthorized</response>
+    /// <response code="403">Forbidden</response>
     [HttpPut("{id:guid}")]
     public IActionResult Update(Guid id, [FromBody] Dessert dessertRequest)
     {
+        if (IsAdmin(out var statusCode)) return statusCode;
+
         var dessert = _context.Desserts.Find(id);
 
         if (dessert == null || dessert.IsDeleted) return NotFound($"Couldn't find dessert with id {id}");
@@ -102,9 +110,13 @@ public class DessertsController : ControllerBase
     /// <param name="id">Id of the dessert to delete</param>
     /// <response code="204">No Content</response>
     /// <response code="404">Not Found</response>
+    /// <response code="401">Unauthorized</response>
+    /// <response code="403">Forbidden</response>
     [HttpDelete("{id:guid}")]
     public IActionResult Delete(Guid id)
     {
+        if (IsAdmin(out var statusCode)) return statusCode;
+
         var dessert = _context.Desserts.Find(id);
 
         if (dessert == null || dessert.IsDeleted) return NotFound($"Couldn't find dessert with id {id}");
@@ -115,5 +127,25 @@ public class DessertsController : ControllerBase
         _context.SaveChanges();
 
         return NoContent();
+    }
+
+    private bool IsAdmin(out IActionResult statusCode)
+    {
+        var user = (User?)HttpContext.Items["User"];
+
+        if (user == null)
+        {
+            statusCode = Unauthorized("Please login to do this");
+            return true;
+        }
+
+        if (user.Role == Models.User.Roles.Customer)
+        {
+            statusCode = StatusCode(403, "You don't have the permissions to do this");
+            return true;
+        }
+
+        statusCode = null!;
+        return false;
     }
 }
