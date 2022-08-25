@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-var serverVersion = new MariaDbServerVersion(new Version(10, 8, 3));
 var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+var serverVersion = ServerVersion.AutoDetect(connectionString);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
