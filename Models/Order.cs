@@ -1,23 +1,24 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace kuro_desserts.Models;
 
 public class Order
 {
-    [Key] public Guid Id { get; set; }
+    [Key, JsonIgnore] public Guid Id { get; set; }
 
     [ForeignKey("DessertId")] public Guid DessertId { get; set; }
 
-    public Dessert? Dessert { get; set; }
+    [JsonIgnore] public Dessert? Dessert { get; set; }
 
     [ForeignKey("FlavorId")] public Guid FlavorId { get; set; }
 
-    public Flavor? Flavor { get; set; }
+    [JsonIgnore] public Flavor? Flavor { get; set; }
 
-    [ForeignKey("CartId")] public Guid CartId { get; set; }
+    [ForeignKey("CartId"), JsonIgnore] public Guid CartId { get; set; }
 
-    public ICollection<OrderTopping>? Toppings { get; set; }
+    [JsonIgnore] public ICollection<OrderTopping>? Toppings { get; set; }
 
     /// <summary>
     /// Change Size of the dessert between 9 and 24 oz
@@ -26,7 +27,7 @@ public class Order
     [Required, Range(9, 24, ErrorMessage = "Dessert size must be between 9 and 24 oz")]
     public int Size { get; set; }
 
-    public int DefaultSize { get; set; } = 12;
+    [JsonIgnore, NotMapped] private const int DefaultSize = 12;
 
     public decimal GetToppingsPrice()
     {

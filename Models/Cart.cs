@@ -1,21 +1,22 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace kuro_desserts.Models;
 
 public class Cart
 {
-    [Key] public Guid Id { get; set; }
+    [Key, JsonIgnore] public Guid Id { get; set; }
 
-    public ICollection<Order>? Orders { get; set; }
+    [JsonIgnore] public ICollection<Order>? Orders { get; set; }
 
-    [ForeignKey("UserId")] public Guid UserId { get; set; }
+    [ForeignKey("UserId"), JsonIgnore] public Guid UserId { get; set; }
 
-    public User? User { get; set; }
+    [JsonIgnore] public User? User { get; set; }
 
     [ForeignKey("AddressId")] public Guid AddressId { get; set; }
 
-    public Address? Address { get; set; }
+    [JsonIgnore] public Address? Address { get; set; }
 
     public decimal GetTotalPrice()
     {
