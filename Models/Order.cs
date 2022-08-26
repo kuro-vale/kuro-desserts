@@ -39,3 +39,12 @@ public class Order
         return GetToppingsPrice() + (decimal)Dessert!.Price * Size / DefaultSize;
     }
 }
+
+public class OrderResponse
+{
+    public Dessert? Dessert { get; set; }
+    public Flavor? Flavor { get; set; }
+    public ICollection<Topping>? Toppings { get; set; }
+
+    public Address? Address { get; set; }
+}
