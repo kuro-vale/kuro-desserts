@@ -67,6 +67,18 @@ public static class SeedData
                 Name = "Cake Pop",
                 Price = 38,
                 Image = "https://cdn.pixabay.com/photo/2015/03/26/23/09/cake-pops-693645_960_720.jpg"
+            },
+            new()
+            {
+                Name = "Brownie",
+                Price = 20,
+                Image = "https://cdn.pixabay.com/photo/2014/11/28/08/03/brownie-548591_960_720.jpg"
+            },
+            new()
+            {
+                Name = "Trifle",
+                Price = 30,
+                Image = "https://cdn.pixabay.com/photo/2019/11/23/20/04/coffee-4648041_960_720.jpg"
             }
         };
         db.Desserts?.AddRange(desserts);

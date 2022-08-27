@@ -5,7 +5,7 @@
 @using kuro_desserts.Models
 <PageTitle>Desserts</PageTitle>
 
-<div class="overflow-auto m-2 rounded-3">
+<div class="overflow-auto m-2">
     @if (_desserts != null)
     {
         @foreach (var dessertChunk in _desserts.Chunk(3))
@@ -13,7 +13,7 @@
             <ul class="list-group list-group-horizontal">
                 @foreach (var dessert in dessertChunk)
                 {
-                    <li class="list-group-item list-group-item-light list-group-item-action" style="@(dessertChunk.Length == 1 ? "width: 23vw; margin: auto;" : "")">
+                    <li class="list-group-item list-group-item-warning list-group-item-action rounded m-1" style="@(dessertChunk.Length == 1 ? "width: 30vw;" : "")">
                         <img class="img-fluid rounded-3" src="@dessert.Image" alt="@dessert.Name"/>
                         @dessert.Name
                         <span class="badge text-bg-success">$@dessert.Price</span>
