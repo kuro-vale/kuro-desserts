@@ -12,6 +12,7 @@ var serverVersion = ServerVersion.AutoDetect(connectionString);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddHttpClient();
 // API services
 builder.Services.AddDbContext<Context>(optionsBuilder =>
     optionsBuilder.UseMySql(connectionString!, serverVersion));
