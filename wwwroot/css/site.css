@@ -48,3 +48,10 @@ body {
     color: #fff;
     border-bottom-color: #fff;
 }
+.validation-message {
+    width: 100%;
+    margin-top: .25rem;
+    margin-bottom: .25rem;
+    font-size: .875em;
+    color: #dc3545;
+}

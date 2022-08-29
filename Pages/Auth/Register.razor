@@ -1,0 +1,62 @@
+﻿@page "/Register"
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@using kuro_desserts.Models
+@using System.Net
+
+<h3>Create new user</h3>
+<EditForm Model="@_user" class="form-control bg-transparent border-0 p-5" OnValidSubmit="RegisterNew" OnInvalidSubmit="ShowError">
+    <label class="form-label">Username</label>
+    <div class="input-group has-validation">
+        <span class="input-group-text">@@</span>
+        <InputText @bind-Value="_user.Username" class="form-control"></InputText>
+        <ValidationMessage For="@(() => _user.Username)" class="invalid-feedback"></ValidationMessage>
+    </div>
+
+    <label class="form-label">Password</label>
+    <div class="input-group has-validation">
+        <InputText @bind-Value="_user.Password" class="form-control"></InputText>
+        <ValidationMessage For="@(() => _user.Password)"></ValidationMessage>
+    </div>
+
+    @if (_isError)
+    {
+        <p class="text-danger mb-0">@_errorMessage</p>
+    }
+
+    <button class="btn btn-primary mt-3" type="submit" disabled="@_isSubmitting">Register</button>
+
+    @* Enable data validation  *@
+    <DataAnnotationsValidator/>
+</EditForm>
+
+@code {
+    readonly User _user = new();
+    bool _isError;
+    bool _isSubmitting;
+    string _errorMessage = "Please review the form.";
+
+    async Task RegisterNew()
+    {
+        _isError = false;
+        _isSubmitting = true;
+
+        var response = await HttpClient.PostAsJsonAsync(
+            $"{NavigationManager.BaseUri}api/auth/register", _user);
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            _errorMessage = response.Content.ReadAsStringAsync().Result;
+            _isError = true;
+            _isSubmitting = false;
+            return;
+        }
+        var token = response.Content.ReadFromJsonAsync<string>().Result;
+        NavigationManager.NavigateTo("/");
+    }
+
+    private void ShowError()
+    {
+        _isError = true;
+    }
+
+}
