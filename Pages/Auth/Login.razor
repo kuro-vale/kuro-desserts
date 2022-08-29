@@ -1,11 +1,11 @@
-﻿@page "/Register"
+﻿@page "/Login"
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 @using kuro_desserts.Models
 @using System.Net
 
-<h3>Create new user</h3>
-<EditForm Model="@_user" class="form-control bg-transparent border-0 p-5" OnValidSubmit="RegisterNew" OnInvalidSubmit="ShowError">
+<h3>Login</h3>
+<EditForm Model="@_user" class="form-control bg-transparent border-0 p-5" OnValidSubmit="NewSession" OnInvalidSubmit="ShowError">
     <label class="form-label">Username</label>
     <div class="input-group has-validation">
         <span class="input-group-text">@@</span>
@@ -24,28 +24,28 @@
         <p class="text-danger mb-0">@_errorMessage</p>
     }
 
-    <button class="btn btn-primary mt-3" type="submit" disabled="@_isSubmitting">Register</button>
+    <button class="btn btn-primary mt-3" type="submit" disabled="@_isSubmitting">Login</button>
 
     @* Enable data validation  *@
     <DataAnnotationsValidator/>
 </EditForm>
 
 @code {
-    readonly User _user = new();
+    readonly LoginRequest _user = new();
     bool _isError;
     bool _isSubmitting;
     string _errorMessage = "Please review the form.";
 
-    async Task RegisterNew()
+    async Task NewSession()
     {
         _isError = false;
         _isSubmitting = true;
 
         var response = await HttpClient.PostAsJsonAsync(
-            $"{NavigationManager.BaseUri}api/auth/register", _user);
-        if (response.StatusCode == HttpStatusCode.BadRequest)
+            $"{NavigationManager.BaseUri}api/auth/login", _user);
+        if (response.StatusCode == HttpStatusCode.Unauthorized)
         {
-            _errorMessage = response.Content.ReadAsStringAsync().Result.Trim('"');
+            _errorMessage = "Invalid Credentials";
             _isError = true;
             _isSubmitting = false;
             return;
