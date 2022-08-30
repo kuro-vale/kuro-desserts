@@ -53,7 +53,7 @@
             _isSubmitting = false;
             return;
         }
-        var token = response.Content.ReadFromJsonAsync<string>().Result;
+        var token = response.Content.ReadAsStringAsync().Result.Trim('"');
         await JsRuntime.InvokeAsync<object>("WriteCookie.WriteCookie", "token", token, DateTime.Now.AddDays(15));
         NavigationManager.NavigateTo("/", forceLoad: true);
     }
