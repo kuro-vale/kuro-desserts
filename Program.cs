@@ -2,6 +2,7 @@ using System.Reflection;
 using kuro_desserts.Data;
 using kuro_desserts.Middlewares;
 using kuro_desserts.Helpers;
+using kuro_desserts.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -13,6 +14,7 @@ var serverVersion = ServerVersion.AutoDetect(connectionString);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpClient();
+builder.Services.AddScoped<AuthService>();
 // API services
 builder.Services.AddDbContext<Context>(optionsBuilder =>
     optionsBuilder.UseMySql(connectionString!, serverVersion));

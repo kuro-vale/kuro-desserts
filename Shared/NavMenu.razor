@@ -1,11 +1,43 @@
-﻿<header class="mb-auto">
+﻿@using kuro_desserts.Services
+@using kuro_desserts.Models
+@inject IJSRuntime JsRuntime;
+@inject AuthService AuthService
+
+<header class="mb-auto">
     <div>
         <h3 class="float-md-start mb-0">Kuro Desserts</h3>
         <nav class="nav nav-masthead justify-content-center float-md-end">
             <NavLink class="nav-link fw-bold py-1 px-0" Match="NavLinkMatch.All" href="/">Home</NavLink>
             <NavLink class="nav-link fw-bold py-1 px-0" href="/desserts">Desserts</NavLink>
-            <NavLink class="nav-link fw-bold py-1 px-0" href="/register">Register</NavLink>
-            <NavLink class="nav-link fw-bold py-1 px-0" href="/login">Login</NavLink>
+            @if (LoggedUser != null)
+            {
+                <NavLink class="nav-link fw-bold py-1 px-0" href="/orders">My Orders</NavLink>
+                <NavLink class="nav-link fw-bold py-1 px-0" href="/profile">Profile</NavLink>
+                <p class="nav-link fw-bold py-1 px-0">Logout</p>
+            }
+            else
+            {
+                <NavLink class="nav-link fw-bold py-1 px-0" href="/register">Register</NavLink>
+                <NavLink class="nav-link fw-bold py-1 px-0" href="/login">Login</NavLink>
+            }
         </nav>
     </div>
 </header>
+
+@code
+{
+    private User? LoggedUser => AuthService.LoggedUser;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var token = await JsRuntime.InvokeAsync<string?>("ReadCookie.ReadCookie", "token");
+            if (token != null)
+            {
+                AuthService.SetUser(token);
+            }
+            StateHasChanged();
+        }
+    }
+}
