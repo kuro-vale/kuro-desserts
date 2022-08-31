@@ -12,7 +12,7 @@
 <PageTitle>Profile</PageTitle>
 
 <h3>Your profile</h3>
-<EditForm Model="@_user" class="form-control bg-transparent border-0 p-5 pt-0" OnValidSubmit="UpdateUser" OnInvalidSubmit="ShowError">
+<EditForm Model="@_user" class="form-control bg-transparent border-0 p-5 py-0" OnValidSubmit="UpdateUser" OnInvalidSubmit="ShowError">
     <div class="container">
         <img class="img-fluid" alt="Profile photo" src="https://robohash.org/@LoggedUser!.Username?size=200x200"/>
     </div>
@@ -33,6 +33,30 @@
     @* Enable data validation  *@
     <DataAnnotationsValidator/>
 </EditForm>
+<div>
+    <button class="btn btn-danger mt-3" disabled="@_isSubmitting" @onclick="ShowModal">Delete User</button>
+</div>
+
+@* Delete user Modal *@
+<div class="modal @(_modalShowed ? "show" : "")" style="@(_modalShowed ? "display: block;" : "display: none;")">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">We will miss you 🥺</h5>
+                <button type="button" class="btn-close" @onclick="HideModal"></button>
+            </div>
+            <div class="modal-body">
+                Do you want to delete your user?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary text-white" @onclick="HideModal">Cancel</button>
+                <button type="button" class="btn btn-danger" @onclick="DeleteUser">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="@(_modalShowed ? "modal-backdrop show" : "")"></div>
 
 @code {
     private User? LoggedUser => AuthService.LoggedUser;
@@ -42,6 +66,8 @@
     bool _isError;
     bool _isSubmitting;
     string _errorMessage = "Please review the form.";
+
+    private bool _modalShowed;
 
     protected override void OnInitialized()
     {
@@ -79,9 +105,26 @@
         NavigationManager.NavigateTo("/", forceLoad: true);
     }
 
+    async Task DeleteUser()
+    {
+        HttpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
+        await HttpClient.DeleteAsync($"{NavigationManager.BaseUri}api/auth");
+        NavigationManager.NavigateTo("/", forceLoad: true);
+    }
+
     private void ShowError()
     {
         _isError = true;
+    }
+
+    private void ShowModal()
+    {
+        _modalShowed = true;
+    }
+
+    private void HideModal()
+    {
+        _modalShowed = false;
     }
 
 }
