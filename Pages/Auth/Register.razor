@@ -10,15 +10,15 @@
 <h3>Create new user</h3>
 <EditForm Model="@_user" class="form-control bg-transparent border-0 p-5" OnValidSubmit="RegisterNew" OnInvalidSubmit="ShowError">
     <label class="form-label">Username</label>
-    <div class="input-group has-validation">
+    <div class="input-group">
         <span class="input-group-text">@@</span>
         <InputText @bind-Value="_user.Username" class="form-control"></InputText>
         <ValidationMessage For="@(() => _user.Username)"></ValidationMessage>
     </div>
 
     <label class="form-label">Password</label>
-    <div class="input-group has-validation">
-        <InputText @bind-Value="_user.Password" class="form-control"></InputText>
+    <div class="input-group">
+        <InputText type="password" @bind-Value="_user.Password" class="form-control"></InputText>
         <ValidationMessage For="@(() => _user.Password)"></ValidationMessage>
     </div>
 

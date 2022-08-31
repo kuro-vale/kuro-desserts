@@ -2,6 +2,7 @@
 @using kuro_desserts.Models
 @inject IJSRuntime JsRuntime;
 @inject AuthService AuthService
+@inject NavigationManager NavigationManager
 
 <header class="mb-auto">
     <div>
@@ -13,7 +14,7 @@
             {
                 <NavLink class="nav-link fw-bold py-1 px-0" href="/orders">My Orders</NavLink>
                 <NavLink class="nav-link fw-bold py-1 px-0" href="/profile">Profile</NavLink>
-                <p class="nav-link fw-bold py-1 px-0">Logout</p>
+                <p class="nav-link fw-bold py-1 px-0" @onclick="ShowModal">Logout</p>
             }
             else
             {
@@ -24,9 +25,31 @@
     </div>
 </header>
 
+@* Logout Modal *@
+<div class="modal @(_modalShowed ? "show" : "")" style="@(_modalShowed ? "display: block;" : "display: none;")">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">We will miss you 🥺</h5>
+                <button type="button" class="btn-close" @onclick="HideModal"></button>
+            </div>
+            <div class="modal-body">
+                Do you want to logout?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary text-white" @onclick="HideModal">Close</button>
+                <button type="button" class="btn btn-danger" @onclick="ClearToken">Logout</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="@(_modalShowed ? "modal-backdrop show" : "")"></div>
+
 @code
 {
     private User? LoggedUser => AuthService.LoggedUser;
+    private bool _modalShowed = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -39,5 +62,21 @@
             }
             StateHasChanged();
         }
+    }
+
+    private async void ClearToken()
+    {
+        await JsRuntime.InvokeVoidAsync("WriteCookie.ClearToken");
+        NavigationManager.NavigateTo("/", forceLoad: true);
+    }
+
+    private void ShowModal()
+    {
+        _modalShowed = true;
+    }
+
+    private void HideModal()
+    {
+        _modalShowed = false;
     }
 }

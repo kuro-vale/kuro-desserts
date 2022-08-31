@@ -9,9 +9,7 @@
 
 <script>
     window.WriteCookie = {
-
         WriteCookie: function (name, value, days) {
-
             let expires;
             if (days) {
                 let date = new Date();
@@ -22,6 +20,9 @@
                 expires = "";
             }
             document.cookie = name + "=" + value + expires + "; path=/";
+        },
+        ClearToken: function () {
+            document.cookie = "token=" + "; path=/";
         }
     }
     window.ReadCookie = {
@@ -39,6 +40,6 @@
             }
         }
         return "";
+        }
     }
-}
 </script>
