@@ -1,0 +1,87 @@
+﻿@page "/Profile"
+@using kuro_desserts.Services
+@using kuro_desserts.Models
+@using Microsoft.AspNetCore.Components
+@using System.Net
+@using System.Net.Http.Headers
+@inject AuthService AuthService
+@inject NavigationManager NavigationManager
+@inject HttpClient HttpClient
+@inject IJSRuntime JsRuntime;
+
+<PageTitle>Profile</PageTitle>
+
+<h3>Your profile</h3>
+<EditForm Model="@_user" class="form-control bg-transparent border-0 p-5 pt-0" OnValidSubmit="UpdateUser" OnInvalidSubmit="ShowError">
+    <div class="container">
+        <img class="img-fluid" alt="Profile photo" src="https://robohash.org/@LoggedUser!.Username?size=200x200"/>
+    </div>
+    <label class="form-label">Username</label>
+    <div class="input-group">
+        <span class="input-group-text">@@</span>
+        <InputText @bind-Value="_user.Username" class="form-control"></InputText>
+        <ValidationMessage For="@(() => _user.Username)"></ValidationMessage>
+    </div>
+
+    @if (_isError)
+    {
+        <p class="text-danger mb-0">@_errorMessage</p>
+    }
+
+    <button class="btn btn-primary mt-3" type="submit" disabled="@_isSubmitting">Update</button>
+
+    @* Enable data validation  *@
+    <DataAnnotationsValidator/>
+</EditForm>
+
+@code {
+    private User? LoggedUser => AuthService.LoggedUser;
+    private readonly User _user = new();
+    string? _token;
+
+    bool _isError;
+    bool _isSubmitting;
+    string _errorMessage = "Please review the form.";
+
+    protected override void OnInitialized()
+    {
+        if (LoggedUser == null)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+        _user.Username = LoggedUser!.Username;
+        _user.Password = "password123";
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _token = await JsRuntime.InvokeAsync<string?>("ReadCookie.ReadCookie", "token");
+            StateHasChanged();
+        }
+    }
+
+    async Task UpdateUser()
+    {
+        _isError = false;
+        _isSubmitting = true;
+
+        HttpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
+        var response = await HttpClient.PutAsJsonAsync($"{NavigationManager.BaseUri}api/auth", _user);
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            _errorMessage = response.Content.ReadAsStringAsync().Result.Trim('"');
+            _isError = true;
+            _isSubmitting = false;
+            return;
+        }
+        NavigationManager.NavigateTo("/", forceLoad: true);
+    }
+
+    private void ShowError()
+    {
+        _isError = true;
+    }
+
+}

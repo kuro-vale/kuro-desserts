@@ -84,7 +84,6 @@ public class AuthController : ControllerBase
         }
 
         user.Username = userRequest.Username;
-        user.Password = BCrypt.Net.BCrypt.HashPassword(userRequest.Password);
 
         _context.Users.Update(user);
         try
