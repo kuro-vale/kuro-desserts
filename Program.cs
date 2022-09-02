@@ -15,6 +15,8 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<CartService>();
+builder.Services.AddScoped<MessageService>();
 // API services
 builder.Services.AddDbContext<Context>(optionsBuilder =>
     optionsBuilder.UseMySql(connectionString!, serverVersion));
