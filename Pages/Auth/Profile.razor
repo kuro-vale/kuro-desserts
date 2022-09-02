@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.Components
 @using System.Net
 @using System.Net.Http.Headers
+@using System.Text.Json
 @inject AuthService AuthService
 @inject NavigationManager NavigationManager
 @inject HttpClient HttpClient
@@ -34,29 +35,77 @@
     <DataAnnotationsValidator/>
 </EditForm>
 <div>
-    <button class="btn btn-danger mt-3" disabled="@_isSubmitting" @onclick="ShowModal">Delete User</button>
+    <button class="btn btn-info mt-3" disabled="@_isSubmitting" @onclick="ShowAddressesModal">Manage your addresses</button>
+    <button class="btn btn-danger mt-3" disabled="@_isSubmitting" @onclick="ShowDeleteModal">Delete User</button>
 </div>
 
 @* Delete user Modal *@
-<div class="modal @(_modalShowed ? "show" : "")" style="@(_modalShowed ? "display: block;" : "display: none;")">
+<div class="modal @(_deleteModalShowed ? "show" : "")" style="@(_deleteModalShowed ? "display: block;" : "display: none;")">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">We will miss you 🥺</h5>
-                <button type="button" class="btn-close" @onclick="HideModal"></button>
+                <button type="button" class="btn-close" @onclick="HideDeleteModal"></button>
             </div>
             <div class="modal-body">
                 Do you want to delete your user?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary text-white" @onclick="HideModal">Cancel</button>
+                <button type="button" class="btn btn-secondary text-white" @onclick="HideDeleteModal">Cancel</button>
                 <button type="button" class="btn btn-danger" @onclick="DeleteUser">Yes</button>
             </div>
         </div>
     </div>
 </div>
 
-<div class="@(_modalShowed ? "modal-backdrop show" : "")"></div>
+<div class="@(_deleteModalShowed ? "modal-backdrop show" : "")"></div>
+
+@* Manage Addresses Modal *@
+<div class="modal @(_addressesModalShowed ? "show" : "")" style="@(_addressesModalShowed ? "display: block;" : "display: none;")">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Your addresses</h5>
+                <button type="button" class="btn-close" @onclick="HideAddressesModal"></button>
+            </div>
+            <div class="modal-body">
+                @if (_addresses != null)
+                {
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">Line</th>
+                            <th scope="col">City</th>
+                            <th scope="col">Postal code</th>
+                            <th scope="col"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var address in _addresses)
+                        {
+                            <tr>
+                                <td>@address.Line</td>
+                                <td>@address.City</td>
+                                <td>@address.PostalCode</td>
+                                <td>
+                                    <a href="/profile/edit/@address.Id" class="btn btn-sm rounded-circle btn-outline-primary">Update</a>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <h5 class="my-5">You don't have any address</h5>
+                }
+                <NavLink href="/profile/create" class="btn btn-outline-success">Add New Address</NavLink>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="@(_addressesModalShowed ? "modal-backdrop show" : "")"></div>
 
 @code {
     private User? LoggedUser => AuthService.LoggedUser;
@@ -67,7 +116,10 @@
     bool _isSubmitting;
     string _errorMessage = "Please review the form.";
 
-    private bool _modalShowed;
+    private bool _deleteModalShowed;
+    private bool _addressesModalShowed;
+
+    private Address[]? _addresses;
 
     protected override void OnInitialized()
     {
@@ -117,14 +169,33 @@
         _isError = true;
     }
 
-    private void ShowModal()
+    private void ShowDeleteModal()
     {
-        _modalShowed = true;
+        _deleteModalShowed = true;
     }
 
-    private void HideModal()
+    private void HideDeleteModal()
     {
-        _modalShowed = false;
+        _deleteModalShowed = false;
+    }
+
+    private async Task ShowAddressesModal()
+    {
+        HttpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
+        try
+        {
+            _addresses = await HttpClient.GetFromJsonAsync<Address[]>($"{NavigationManager.BaseUri}api/addresses");
+        }
+        catch (JsonException)
+        {
+            _addresses = null;
+        }
+        _addressesModalShowed = true;
+    }
+
+    private void HideAddressesModal()
+    {
+        _addressesModalShowed = false;
     }
 
 }
