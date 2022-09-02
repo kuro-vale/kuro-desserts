@@ -1,5 +1,81 @@
 ﻿@page "/profile/create"
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime;
+@using kuro_desserts.Models
+@using System.Net
+@using System.Net.Http.Headers
+
+<PageTitle>New Address</PageTitle>
+
+<h3>Create new address</h3>
+<EditForm Model="@_address" class="form-control bg-transparent border-0 p-5" OnValidSubmit="CreateNew" OnInvalidSubmit="ShowError">
+    <label class="form-label">Line</label>
+    <div class="input-group">
+        <InputText @bind-Value="_address.Line" class="form-control"></InputText>
+        <ValidationMessage For="@(() => _address.Line)"></ValidationMessage>
+    </div>
+
+    <label class="form-label">Postal code</label>
+    <div class="input-group">
+        <InputText @bind-Value="_address.PostalCode" class="form-control"></InputText>
+        <ValidationMessage For="@(() => _address.PostalCode)"></ValidationMessage>
+    </div>
+
+    <label class="form-label">City</label>
+    <div class="input-group">
+        <InputText @bind-Value="_address.City" class="form-control"></InputText>
+        <ValidationMessage For="@(() => _address.City)"></ValidationMessage>
+    </div>
+
+    @if (_isError)
+    {
+        <p class="text-danger mb-0">@_errorMessage</p>
+    }
+
+    <button class="btn btn-primary mt-3" type="submit" disabled="@_isSubmitting">Create</button>
+
+    @* Enable data validation  *@
+    <DataAnnotationsValidator/>
+</EditForm>
 
 @code {
-    
+    readonly Address _address = new();
+    bool _isError;
+    bool _isSubmitting;
+    string _errorMessage = "Please review the form.";
+    string? _token;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _token = await JsRuntime.InvokeAsync<string?>("ReadCookie.ReadCookie", "token");
+            StateHasChanged();
+        }
+    }
+
+    async Task CreateNew()
+    {
+        _isError = false;
+        _isSubmitting = true;
+
+        HttpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
+        var response = await HttpClient.PostAsJsonAsync(
+            $"{NavigationManager.BaseUri}api/addresses", _address);
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            _errorMessage = response.Content.ReadAsStringAsync().Result.Trim('"');
+            _isError = true;
+            _isSubmitting = false;
+            return;
+        }
+        NavigationManager.NavigateTo("/profile");
+    }
+
+    private void ShowError()
+    {
+        _isError = true;
+    }
+
 }

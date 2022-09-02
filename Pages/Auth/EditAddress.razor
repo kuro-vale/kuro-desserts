@@ -1,5 +1,91 @@
 ﻿@page "/profile/edit/{id:guid}"
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime;
+@using kuro_desserts.Models
+@using System.Net
+@using System.Net.Http.Headers
+
+<PageTitle>Edit Address</PageTitle>
+
+<h3>Edit Address</h3>
+<EditForm Model="@_address" class="form-control bg-transparent border-0 p-5" OnValidSubmit="UpdateAddress" OnInvalidSubmit="ShowError">
+    <label class="form-label">Line</label>
+    <div class="input-group">
+        <InputText @bind-Value="_address.Line" class="form-control"></InputText>
+        <ValidationMessage For="@(() => _address.Line)"></ValidationMessage>
+    </div>
+
+    <label class="form-label">Postal code</label>
+    <div class="input-group">
+        <InputText @bind-Value="_address.PostalCode" class="form-control"></InputText>
+        <ValidationMessage For="@(() => _address.PostalCode)"></ValidationMessage>
+    </div>
+
+    <label class="form-label">City</label>
+    <div class="input-group">
+        <InputText @bind-Value="_address.City" class="form-control"></InputText>
+        <ValidationMessage For="@(() => _address.City)"></ValidationMessage>
+    </div>
+
+    @if (_isError)
+    {
+        <p class="text-danger mb-0">@_errorMessage</p>
+    }
+
+    <button class="btn btn-primary mt-3" type="submit" disabled="@_isSubmitting">Edit</button>
+
+    @* Enable data validation  *@
+    <DataAnnotationsValidator/>
+</EditForm>
 
 @code {
-    
+
+    [Parameter]
+    public Guid Id { get; set; }
+
+    Address? _fetchedAddress;
+    readonly Address _address = new();
+    bool _isError;
+    bool _isSubmitting;
+    string _errorMessage = "Please review the form.";
+    string? _token;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _token = await JsRuntime.InvokeAsync<string?>("ReadCookie.ReadCookie", "token");
+            HttpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
+            _fetchedAddress = await HttpClient.GetFromJsonAsync<Address>($"{NavigationManager.BaseUri}api/addresses/{Id}");
+            _address.City = _fetchedAddress!.City;
+            _address.Line = _fetchedAddress.Line;
+            _address.PostalCode = _fetchedAddress.PostalCode;
+            StateHasChanged();
+        }
+    }
+
+    async Task UpdateAddress()
+    {
+        _isError = false;
+        _isSubmitting = true;
+
+        HttpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
+        var response = await HttpClient.PutAsJsonAsync(
+            $"{NavigationManager.BaseUri}api/addresses/{_fetchedAddress!.Id}", _address);
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            _errorMessage = response.Content.ReadAsStringAsync().Result.Trim('"');
+            _isError = true;
+            _isSubmitting = false;
+            return;
+        }
+        NavigationManager.NavigateTo("/profile");
+    }
+
+    private void ShowError()
+    {
+        _isError = true;
+    }
+
 }
