@@ -1,8 +1,11 @@
 ﻿@inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
+@inject CartService CartService
+@inject MessageService MessageService
 
 @page "/desserts"
 @using kuro_desserts.Models
+@using kuro_desserts.Services
 <PageTitle>Desserts</PageTitle>
 
 <div class="overflow-auto m-2">
@@ -13,16 +16,24 @@
             <ul class="list-group list-group-horizontal">
                 @foreach (var dessert in dessertChunk)
                 {
-                    <li class="list-group-item list-group-item-warning list-group-item-action rounded m-1" style="@(dessertChunk.Length == 1 ? "width: 30vw;" : "")">
+                    <li class="list-group-item list-group-item-warning list-group-item-action rounded m-1"
+                        style="@(dessertChunk.Length == 1 ? "width: 30vw;" : "")"
+                        @onclick="() => CartService.ShowDessertModal(dessert)">
                         <img class="img-fluid rounded-3" src="@dessert.Image" alt="@dessert.Name"/>
                         @dessert.Name
-                        <span class="badge text-bg-success">$@dessert.Price</span>
+                        <span class="badge text-bg-success">@dessert.Price.ToString("C0")</span>
                     </li>
                 }
             </ul>
         }
     }
 </div>
+
+@if (CartService.DessertModalShowed)
+{
+    <DessertModal Order="CartService.Order" OnCancel="CartService.HideDessertModal"
+                  OnConfirm="ConfirmOrder"/>
+}
 
 @code {
     List<Dessert>? _desserts = new();
@@ -32,4 +43,11 @@
         _desserts = await HttpClient.GetFromJsonAsync<List<Dessert>>(NavigationManager.BaseUri + "api/desserts");
     }
 
+    private void ConfirmOrder()
+    {
+        CartService.Cart.Orders!.Add(CartService.Order!);
+        CartService.Order = null;
+        MessageService.SendMessage();
+        CartService.DessertModalShowed = false;
+    }
 }

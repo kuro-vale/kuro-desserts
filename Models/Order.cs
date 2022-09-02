@@ -27,7 +27,7 @@ public class Order
     [Required, Range(9, 24, ErrorMessage = "Dessert size must be between 9 and 24 oz")]
     public int Size { get; set; }
 
-    [JsonIgnore, NotMapped] private const int DefaultSize = 12;
+    [JsonIgnore, NotMapped] public const int DefaultSize = 12;
 
     public decimal GetToppingsPrice()
     {
