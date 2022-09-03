@@ -17,8 +17,8 @@
                     <label class="form-label">Size:</label>
                     <span class="badge text-bg-info">@Order.Size oz</span>
                     <input type="range" class="form-range" min="9" max="24" @bind="Order.Size" @bind:event="oninput">
-                    <p class="text-danger text-start mb-0 mx-3">*required</p>
-                    <select class="form-select mb-3" @bind-Value="@Order.FlavorId" @onchange="EnableButton">
+                    <p class="text-danger text-start mb-0 mx-3 mt-3">*required</p>
+                    <select class="form-select mb-3" @onchange="EnableButton">
                         <option value="" selected>Select your flavor</option>
                         @if (_flavors != null)
                         {
@@ -88,7 +88,15 @@
 
     private void EnableButton(ChangeEventArgs e)
     {
-        _flavorSelected = e.Value!.ToString() != "";
+        if (e.Value!.ToString() == "")
+        {
+            _flavorSelected = false;
+        }
+        else
+        {
+            _flavorSelected = true;
+            Order.FlavorId = Guid.Parse(e.Value.ToString()!);
+        }
     }
 
 }

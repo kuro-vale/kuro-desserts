@@ -4,8 +4,8 @@ namespace kuro_desserts.Services;
 
 public class CartService
 {
-    public bool DessertModalShowed { get; set; }
-    public Order? Order { get; set; }
+    public bool DessertModalShowed { get; private set; }
+    public Order? Order { get; private set; }
 
     public Cart Cart { get; } = new()
     {
@@ -29,6 +29,14 @@ public class CartService
     public void HideDessertModal()
     {
         Order = null;
+        DessertModalShowed = false;
+    }
+    
+    public void ConfirmOrder(MessageService messageService)
+    {
+        Cart.Orders!.Add(Order!);
+        Order = null;
+        messageService.SendMessage();
         DessertModalShowed = false;
     }
 

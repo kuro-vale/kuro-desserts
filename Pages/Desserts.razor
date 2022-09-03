@@ -32,7 +32,7 @@
 @if (CartService.DessertModalShowed)
 {
     <DessertModal Order="CartService.Order" OnCancel="CartService.HideDessertModal"
-                  OnConfirm="ConfirmOrder"/>
+                  OnConfirm="() => CartService.ConfirmOrder(MessageService)"/>
 }
 
 @code {
@@ -43,11 +43,4 @@
         _desserts = await HttpClient.GetFromJsonAsync<List<Dessert>>(NavigationManager.BaseUri + "api/desserts");
     }
 
-    private void ConfirmOrder()
-    {
-        CartService.Cart.Orders!.Add(CartService.Order!);
-        CartService.Order = null;
-        MessageService.SendMessage();
-        CartService.DessertModalShowed = false;
-    }
 }
