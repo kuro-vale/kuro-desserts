@@ -36,32 +36,16 @@
     </div>
 </header>
 
-@* Logout Modal *@
-<div class="modal @(_modalShowed ? "show" : "")" style="@(_modalShowed ? "display: block;" : "display: none;")">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">We will miss you 🥺</h5>
-                <button type="button" class="btn-close" @onclick="HideModal"></button>
-            </div>
-            <div class="modal-body">
-                Do you want to logout?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary text-white" @onclick="HideModal">Close</button>
-                <button type="button" class="btn btn-danger" @onclick="ClearToken">Logout</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="@(_modalShowed ? "modal-backdrop show" : "")"></div>
+@if (_showingLogoutModal)
+{
+    <LogoutModal OnCancel="HideModal" OnConfirm="ClearToken"/>
+}
 
 @code
 {
     private User? LoggedUser => AuthService.LoggedUser;
     private Cart Cart => CartService.Cart;
-    private bool _modalShowed = false;
+    private bool _showingLogoutModal;
 
     protected override void OnInitialized()
     {
@@ -94,11 +78,11 @@
 
     private void ShowModal()
     {
-        _modalShowed = true;
+        _showingLogoutModal = true;
     }
 
     private void HideModal()
     {
-        _modalShowed = false;
+        _showingLogoutModal = false;
     }
 }

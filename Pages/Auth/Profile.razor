@@ -39,73 +39,15 @@
     <button class="btn btn-danger mt-3" disabled="@_isSubmitting" @onclick="ShowDeleteModal">Delete User</button>
 </div>
 
-@* Delete user Modal *@
-<div class="modal @(_deleteModalShowed ? "show" : "")" style="@(_deleteModalShowed ? "display: block;" : "display: none;")">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">We will miss you 🥺</h5>
-                <button type="button" class="btn-close" @onclick="HideDeleteModal"></button>
-            </div>
-            <div class="modal-body">
-                Do you want to delete your user?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary text-white" @onclick="HideDeleteModal">Cancel</button>
-                <button type="button" class="btn btn-danger" @onclick="DeleteUser">Yes</button>
-            </div>
-        </div>
-    </div>
-</div>
+@if (_showingDeleteUserModal)
+{
+    <DeleteUserModal OnCancel="HideDeleteUserModal" OnConfirm="DeleteUser"/>
+}
 
-<div class="@(_deleteModalShowed ? "modal-backdrop show" : "")"></div>
-
-@* Manage Addresses Modal *@
-<div class="modal @(_addressesModalShowed ? "show" : "")" style="@(_addressesModalShowed ? "display: block;" : "display: none;")">
-    <div class="modal-dialog modal-xl modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Your addresses</h5>
-                <button type="button" class="btn-close" @onclick="HideAddressesModal"></button>
-            </div>
-            <div class="modal-body">
-                @if (_addresses != null)
-                {
-                    <table class="table">
-                        <thead>
-                        <tr>
-                            <th scope="col">Line</th>
-                            <th scope="col">Postal code</th>
-                            <th scope="col">City</th>
-                            <th scope="col"></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach (var address in _addresses)
-                        {
-                            <tr>
-                                <td>@address.Line</td>
-                                <td>@address.PostalCode</td>
-                                <td>@address.City</td>
-                                <td>
-                                    <a href="/profile/edit/@address.Id" class="btn btn-sm rounded-circle btn-outline-primary">Update</a>
-                                </td>
-                            </tr>
-                        }
-                        </tbody>
-                    </table>
-                }
-                else
-                {
-                    <h5 class="my-5">You don't have any address</h5>
-                }
-                <NavLink href="/profile/create" class="btn btn-outline-success">Add New Address</NavLink>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="@(_addressesModalShowed ? "modal-backdrop show" : "")"></div>
+@if (_showingAddressesModal)
+{
+    <ManageAddressesModal Addresses="_addresses" OnCancel="HideAddressesModal"/>
+}
 
 @code {
     private User? LoggedUser => AuthService.LoggedUser;
@@ -116,8 +58,8 @@
     bool _isSubmitting;
     string _errorMessage = "Please review the form.";
 
-    private bool _deleteModalShowed;
-    private bool _addressesModalShowed;
+    private bool _showingDeleteUserModal;
+    private bool _showingAddressesModal;
 
     private Address[]? _addresses;
 
@@ -171,12 +113,12 @@
 
     private void ShowDeleteModal()
     {
-        _deleteModalShowed = true;
+        _showingDeleteUserModal = true;
     }
 
-    private void HideDeleteModal()
+    private void HideDeleteUserModal()
     {
-        _deleteModalShowed = false;
+        _showingDeleteUserModal = false;
     }
 
     private async Task ShowAddressesModal()
@@ -190,12 +132,12 @@
         {
             _addresses = null;
         }
-        _addressesModalShowed = true;
+        _showingAddressesModal = true;
     }
 
     private void HideAddressesModal()
     {
-        _addressesModalShowed = false;
+        _showingAddressesModal = false;
     }
 
 }
