@@ -17,7 +17,6 @@ public class CartService
     {
         Order = new Order
         {
-            CartId = Cart.Id,
             DessertId = dessert.Id,
             Dessert = dessert,
             Toppings = new List<OrderTopping>(),

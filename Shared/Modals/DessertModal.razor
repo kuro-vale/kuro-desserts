@@ -1,6 +1,7 @@
 ﻿@inject AuthService AuthService
 @inject NavigationManager NavigationManager
 @inject HttpClient HttpClient
+@inject CartService CartService
 @using kuro_desserts.Models
 @using kuro_desserts.Services
 
@@ -18,7 +19,7 @@
                     <span class="badge text-bg-info">@Order.Size oz</span>
                     <input type="range" class="form-range" min="9" max="24" @bind="Order.Size" @bind:event="oninput">
                     <p class="text-danger text-start mb-0 mx-3 mt-3">*required</p>
-                    <select class="form-select mb-3" @onchange="EnableButton">
+                    <select class="form-select mb-3" @onchange="SelectFlavor">
                         <option value="" selected>Select your flavor</option>
                         @if (_flavors != null)
                         {
@@ -32,10 +33,48 @@
                             <option>Sorry we have no flavors available at this moment ☹</option>
                         }
                     </select>
-                    @* <p class="my-1">Do you want to add toppings to your order?</p> *@
-                    @* <select class="form-select"> *@
-                    @*     <option selected>Add new flavor</option> *@
-                    @* </select> *@
+                    @if (Order.Toppings!.Any())
+                    {
+                        <p class="my-1">Toppings added</p>
+                        <table class="table">
+                            <tbody>
+                            @foreach (var topping in Order.Toppings!)
+                            {
+                                <tr>
+                                    <td>@topping.Topping!.Name</td>
+                                    <td>
+                                        <span class="badge text-bg-success">@topping.Topping.Price.ToString("C0")</span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-danger" @onclick="() => RemoveTopping(topping)">Remove</button>
+                                    </td>
+                                </tr>
+                            }
+                            <tr>
+                                <td>Toppings price:</td>
+                                <td>
+                                    <span class="badge text-bg-success">@Order.GetToppingsPrice().ToString("C0")</span>
+                                </td>
+                                <td></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    }
+                    <p class="my-1">Do you want to add toppings to your order?</p>
+                    <select class="form-select" @onchange="AddTopping">
+                        <option value="" selected>Add a new topping</option>
+                        @if (_toppings != null)
+                        {
+                            @foreach (var topping in _toppings)
+                            {
+                                <option value="@topping.Id">@topping.Name @topping.Price.ToString("C0")</option>
+                            }
+                        }
+                        else
+                        {
+                            <option>Sorry we have no toppings available at this moment ☹</option>
+                        }
+                    </select>
                 </div>
                 <div class="modal-footer">
                     <h5>Price: <span class="badge text-bg-success">@Order.GetTotalPrice().ToString("C")</span></h5>
@@ -71,6 +110,7 @@
     public EventCallback OnConfirm { get; set; }
 
     User? LoggedUser => AuthService.LoggedUser;
+    Cart Cart => CartService.Cart;
     List<Flavor>? _flavors;
     List<Topping>? _toppings;
     bool _flavorSelected;
@@ -86,7 +126,7 @@
         NavigationManager.NavigateTo("/login");
     }
 
-    private void EnableButton(ChangeEventArgs e)
+    private async Task SelectFlavor(ChangeEventArgs e)
     {
         if (e.Value!.ToString() == "")
         {
@@ -96,7 +136,27 @@
         {
             _flavorSelected = true;
             Order.FlavorId = Guid.Parse(e.Value.ToString()!);
+            Order.Flavor = await HttpClient.GetFromJsonAsync<Flavor>($"{NavigationManager.BaseUri}api/flavors/{Order.FlavorId}");
         }
+    }
+
+    private async Task AddTopping(ChangeEventArgs e)
+    {
+        if (e.Value!.ToString() != "")
+        {
+            var orderTopping = new OrderTopping()
+            {
+                ToppingId = Guid.Parse(e.Value.ToString()!),
+                Topping = await HttpClient.GetFromJsonAsync<Topping>($"{NavigationManager.BaseUri}api/toppings/{e.Value}"),
+                OrderListIndex = Cart.Orders!.Count
+            };
+            Order.Toppings!.Add(orderTopping);
+        }
+    }
+
+    private void RemoveTopping(OrderTopping topping)
+    {
+        Order.Toppings!.Remove(topping);
     }
 
 }
