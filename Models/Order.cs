@@ -38,6 +38,11 @@ public class Order
     {
         return GetToppingsPrice() + (decimal)Dessert!.Price * Size / DefaultSize;
     }
+
+    public decimal GetDessertPrice()
+    {
+        return (decimal)Dessert!.Price * Size / DefaultSize;
+    }
 }
 
 public class OrderResponse

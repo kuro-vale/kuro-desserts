@@ -1,0 +1,137 @@
+﻿@page "/Checkout"
+@using kuro_desserts.Services
+@using kuro_desserts.Models
+@using System.Text.Json
+@using System.Net.Http.Headers
+@inject CartService CartService
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime;
+
+<PageTitle>Cart</PageTitle>
+
+@if (Cart.Orders!.Any())
+{
+    <h4>Your cart</h4>
+    <div class="overflow-auto">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Dessert</th>
+                <th>Flavor</th>
+                <th>Toppings</th>
+                <th>Price</th>
+            </tr>
+            </thead>
+            <tbody>
+            @{
+                var i = 1;
+            }
+            @foreach (var order in Cart.Orders!)
+            {
+                <tr>
+                    <td>@i</td>
+                    <td>@order.Dessert!.Name</td>
+                    <td>@order.Flavor!.Name</td>
+                    <td></td>
+                    <td>@order.GetDessertPrice().ToString("C")</td>
+                </tr>
+                i += 1;
+                @if (order.Toppings!.Any())
+                {
+                    @foreach (var topping in order.Toppings!)
+                    {
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>@topping.Topping!.Name</td>
+                            <td>@topping.Topping.Price.ToString("C")</td>
+                        </tr>
+                    }
+                }
+            }
+            <tr>
+                <td></td>
+                <td>Total</td>
+                <td></td>
+                <td></td>
+                <td>@Cart.GetTotalPrice().ToString("C")</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    @if (_addresses != null)
+    {
+        <select class="form-select my-3" @onchange="SelectAddress">
+            <option value="" selected>Select an address</option>
+            @foreach (var address in _addresses)
+            {
+                <option value="@address.Id">@address.Line</option>
+            }
+        </select>
+        <button class="btn btn-success my-3 @(_addressSelected ? "" : "disabled")" @onclick="ConfirmCheckout">Checkout</button>
+    }
+    else
+    {
+        <NavLink href="/profile/create" class="btn btn-danger my-3">You don't have any address, Click here to add one</NavLink>
+    }
+}
+else
+{
+    <h1>You have nothing in your cart, go to buy something</h1>
+}
+
+@code {
+    Cart Cart => CartService.Cart;
+    Address[]? _addresses;
+    string? _token;
+    bool _addressSelected;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _token = await JsRuntime.InvokeAsync<string?>("ReadCookie.ReadCookie", "token");
+            HttpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
+            try
+            {
+                _addresses = await HttpClient.GetFromJsonAsync<Address[]?>($"{NavigationManager.BaseUri}api/addresses");
+            }
+            catch (JsonException)
+            {
+                _addresses = null;
+            }
+            StateHasChanged();
+        }
+    }
+
+    void SelectAddress(ChangeEventArgs e)
+    {
+        if (e.Value!.ToString() != "")
+        {
+            Cart.AddressId = Guid.Parse(e.Value.ToString()!);
+            _addressSelected = true;
+        }
+        else
+        {
+            _addressSelected = false;
+        }
+    }
+
+    async Task ConfirmCheckout()
+    {
+        var toppings = Cart.Orders!.SelectMany(order => order.Toppings!).ToList();
+        var checkoutRequest = new CheckoutRequest
+        {
+            Cart = new Cart { AddressId = Cart.AddressId },
+            Orders = Cart.Orders!,
+            OrderToppings = toppings
+        };
+        HttpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
+        await HttpClient.PostAsJsonAsync($"{NavigationManager.BaseUri}api/checkout", checkoutRequest);
+        NavigationManager.NavigateTo("/orders", forceLoad: true);
+    }
+
+}
