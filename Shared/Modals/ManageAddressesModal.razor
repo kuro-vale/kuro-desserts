@@ -26,7 +26,10 @@
                                 <td>@address.PostalCode</td>
                                 <td>@address.City</td>
                                 <td>
-                                    <a href="/profile/edit/@address.Id" class="btn btn-sm rounded-circle btn-outline-primary">Update</a>
+                                    <a href="/profile/edit/@address.Id" class="btn btn-sm rounded-circle btn-outline-primary"
+                                       @onclick="OnCancel">
+                                        Update
+                                    </a>
                                 </td>
                             </tr>
                         }
@@ -37,7 +40,7 @@
                 {
                     <h5 class="my-5">You don't have any address</h5>
                 }
-                <NavLink href="/profile/create" class="btn btn-outline-success">Add New Address</NavLink>
+                <NavLink href="/profile/create" class="btn btn-outline-success" @onclick="OnCancel">Add New Address</NavLink>
             </div>
         </div>
     </div>

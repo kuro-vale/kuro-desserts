@@ -17,6 +17,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<MessageService>();
+builder.Services.AddScoped<ProfileService>();
 // API services
 builder.Services.AddDbContext<Context>(optionsBuilder =>
     optionsBuilder.UseMySql(connectionString!, serverVersion));
