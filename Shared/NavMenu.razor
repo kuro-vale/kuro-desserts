@@ -2,6 +2,7 @@
 @using kuro_desserts.Models
 @inject IJSRuntime JsRuntime;
 @inject AuthService AuthService
+@inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 @inject CartService CartService
 @inject MessageService MessageService
@@ -61,9 +62,9 @@
         if (firstRender)
         {
             var token = await JsRuntime.InvokeAsync<string?>("ReadCookie.ReadCookie", "token");
-            if (token != null)
+            if (token != "")
             {
-                AuthService.SetUser(token);
+                await AuthService.SetUser(token!, HttpClient, NavigationManager);
             }
             StateHasChanged();
         }

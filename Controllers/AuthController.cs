@@ -69,6 +69,25 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
+    /// Get logged user
+    /// </summary>
+    /// <response code="200">Success</response>
+    /// <response code="401">Unatuhorized</response>
+    [HttpGet("current")]
+    public IActionResult GetCurrentUser()
+    {
+        var user = (User?)HttpContext.Items["User"];
+
+        if (user == null)
+        {
+            return Unauthorized("Please login to do this");
+        }
+
+        user.Password = "HIDDEN";
+        return Ok(user);
+    }
+
+    /// <summary>
     /// Update your user
     /// </summary>
     /// <param name="userRequest">Update your username and password</param>

@@ -35,7 +35,9 @@
                     <td>@i</td>
                     <td>@order.Dessert!.Name</td>
                     <td>@order.Flavor!.Name</td>
-                    <td><button class="btn btn-sm btn-danger rounded-circle" @onclick="() => RemoveOrder(order)">Remove</button></td>
+                    <td>
+                        <button class="btn btn-sm btn-danger rounded-circle" @onclick="() => RemoveOrder(order)">Remove</button>
+                    </td>
                     <td>@order.GetDessertPrice().ToString("C")</td>
                 </tr>
                 i += 1;
@@ -96,6 +98,10 @@ else
         if (firstRender)
         {
             _token = await JsRuntime.InvokeAsync<string?>("ReadCookie.ReadCookie", "token");
+            if (_token == "")
+            {
+                NavigationManager.NavigateTo("/", forceLoad:true);
+            }
             HttpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
             try
             {
@@ -134,7 +140,11 @@ else
         };
         HttpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
         await HttpClient.PostAsJsonAsync($"{NavigationManager.BaseUri}api/checkout", checkoutRequest);
-        NavigationManager.NavigateTo("/", forceLoad: true);
+        CartService.Cart = new Cart
+        {
+            Orders = new List<Order>()
+        };
+        NavigationManager.NavigateTo("/orders");
     }
 
     void RemoveOrder(Order order)

@@ -56,6 +56,10 @@
         if (firstRender)
         {
             _token = await JsRuntime.InvokeAsync<string?>("ReadCookie.ReadCookie", "token");
+            if (_token == "")
+            {
+                NavigationManager.NavigateTo("/", forceLoad:true);
+            }
             HttpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
             _fetchedAddress = await HttpClient.GetFromJsonAsync<Address>($"{NavigationManager.BaseUri}api/addresses/{Id}");
             _address.City = _fetchedAddress!.City;

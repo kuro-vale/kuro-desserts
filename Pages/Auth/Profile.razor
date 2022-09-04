@@ -73,6 +73,10 @@
         if (firstRender)
         {
             _token = await JsRuntime.InvokeAsync<string?>("ReadCookie.ReadCookie", "token");
+            if (_token == "")
+            {
+                NavigationManager.NavigateTo("/", forceLoad:true);
+            }
             StateHasChanged();
         }
     }

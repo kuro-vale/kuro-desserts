@@ -58,6 +58,10 @@
         if (firstRender)
         {
             var token = await JsRuntime.InvokeAsync<string?>("ReadCookie.ReadCookie", "token");
+            if (token == "")
+            {
+                NavigationManager.NavigateTo("/", forceLoad:true);
+            }
             HttpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(token);
             try
             {

@@ -7,9 +7,8 @@ public class CartService
     public bool DessertModalShowed { get; private set; }
     public Order? Order { get; private set; }
 
-    public Cart Cart { get; } = new()
+    public Cart Cart { get; set; } = new()
     {
-        Id = Guid.NewGuid(),
         Orders = new List<Order>()
     };
 
