@@ -7,6 +7,7 @@
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JsRuntime;
+@inject MessageService MessageService
 
 <PageTitle>Cart</PageTitle>
 
@@ -16,7 +17,7 @@
     <div class="overflow-auto">
         <table class="table">
             <thead>
-            <tr>
+            <tr class="table-dark">
                 <th>#</th>
                 <th>Dessert</th>
                 <th>Flavor</th>
@@ -30,11 +31,11 @@
             }
             @foreach (var order in Cart.Orders!)
             {
-                <tr>
+                <tr class="table-light">
                     <td>@i</td>
                     <td>@order.Dessert!.Name</td>
                     <td>@order.Flavor!.Name</td>
-                    <td></td>
+                    <td><button class="btn btn-sm btn-danger rounded-circle" @onclick="() => RemoveOrder(order)">Remove</button></td>
                     <td>@order.GetDessertPrice().ToString("C")</td>
                 </tr>
                 i += 1;
@@ -42,7 +43,7 @@
                 {
                     @foreach (var topping in order.Toppings!)
                     {
-                        <tr>
+                        <tr class="table-secondary">
                             <td></td>
                             <td></td>
                             <td></td>
@@ -52,7 +53,7 @@
                     }
                 }
             }
-            <tr>
+            <tr class="table-info">
                 <td></td>
                 <td>Total</td>
                 <td></td>
@@ -64,7 +65,8 @@
     </div>
     @if (_addresses != null)
     {
-        <select class="form-select my-3" @onchange="SelectAddress">
+        <p class="text-danger text-start mb-0 mx-3 mt-3">*required</p>
+        <select class="form-select mb-3" @onchange="SelectAddress">
             <option value="" selected>Select an address</option>
             @foreach (var address in _addresses)
             {
@@ -122,6 +124,7 @@ else
 
     async Task ConfirmCheckout()
     {
+        _addressSelected = false;
         var toppings = Cart.Orders!.SelectMany(order => order.Toppings!).ToList();
         var checkoutRequest = new CheckoutRequest
         {
@@ -131,7 +134,13 @@ else
         };
         HttpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(_token);
         await HttpClient.PostAsJsonAsync($"{NavigationManager.BaseUri}api/checkout", checkoutRequest);
-        NavigationManager.NavigateTo("/orders", forceLoad: true);
+        NavigationManager.NavigateTo("/", forceLoad: true);
+    }
+
+    void RemoveOrder(Order order)
+    {
+        Cart.Orders!.Remove(order);
+        MessageService.SendMessage();
     }
 
 }

@@ -1,0 +1,74 @@
+﻿@page "/Orders"
+@using kuro_desserts.Models
+@using System.Text.Json
+@using System.Net.Http.Headers
+@inject IJSRuntime JsRuntime;
+@inject HttpClient HttpClient;
+@inject NavigationManager NavigationManager;
+
+<div class="overflow-auto">
+    @if (_orders != null)
+    {
+        @foreach (var order in _orders)
+        {
+            <div class="card mb-3 overflow-auto">
+                <div class="card-body d-flex flex-row justify-content-around">
+                    <div class="d-flex flex-column justify-content-center mx-3 w-25">
+                        <img src="@order.Dessert!.Image" class="img-fluid" alt="@order.Dessert.Name"/>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center mx-3">
+                        <p class="text-warning">Dessert:</p>
+                        <p>@order.Dessert.Name</p>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center mx-3">
+                        <p class="text-primary">Flavor:</p>
+                        <p>@order.Flavor!.Name</p>
+                    </div>
+                    @if (order.Toppings!.Any())
+                    {
+                        <div class="d-flex flex-column justify-content-center mx-3">
+                            <p class="text-danger">Toppings:</p>
+                            @foreach (var topping in order.Toppings!)
+                            {
+                                <p>@topping.Name</p>
+                            }
+                        </div>
+                    }
+                    <div class="d-flex flex-column justify-content-center mx-3">
+                        <p class="text-info">Address:</p>
+                        <p>@order.Address!.Line</p>
+                        <p>@order.Address.City</p>
+                        <p>@order.Address.PostalCode</p>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <h1>You haven't buy anything yet</h1>
+    }
+</div>
+
+@code {
+    OrderResponse[]? _orders;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var token = await JsRuntime.InvokeAsync<string?>("ReadCookie.ReadCookie", "token");
+            HttpClient.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(token);
+            try
+            {
+                _orders = await HttpClient.GetFromJsonAsync<OrderResponse[]>($"{NavigationManager.BaseUri}api/orders");
+            }
+            catch (JsonException)
+            {
+                _orders = null;
+            }
+            StateHasChanged();
+        }
+    }
+
+}
