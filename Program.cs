@@ -14,6 +14,7 @@ var serverVersion = ServerVersion.AutoDetect(connectionString);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpClient();
+builder.Services.AddLocalization();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<MessageService>();
@@ -52,6 +53,8 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
+
+app.UseRequestLocalization("en-US");
 
 // Public swagger ui
 app.UseSwagger();
