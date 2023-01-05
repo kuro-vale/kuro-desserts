@@ -18,6 +18,9 @@ The thematic of this project is a dessert store, you can add desserts to your ca
 ![Screenshot_20230104_201229](https://user-images.githubusercontent.com/87244716/210679400-ce26c573-7008-440e-b51a-8e70a3854f2b.png)
 #### Checkout
 ![Screenshot_20230104_201346](https://user-images.githubusercontent.com/87244716/210679551-be62b3e0-af45-4b1f-8593-e0d03fc135db.png)
+#### Swagger docs
+![Screenshot_20230104_201557](https://user-images.githubusercontent.com/87244716/210679737-f50c1d0b-9453-47fd-abea-800cec116b33.png)
+
 
 
 ## Deploy
