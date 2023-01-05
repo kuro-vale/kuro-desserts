@@ -7,8 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
-var serverVersion = ServerVersion.AutoDetect(connectionString);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -20,8 +18,7 @@ builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<MessageService>();
 builder.Services.AddScoped<ProfileService>();
 // API services
-builder.Services.AddDbContext<Context>(optionsBuilder =>
-    optionsBuilder.UseMySql(connectionString!, serverVersion));
+builder.Services.AddDbContext<Context>(optionsBuilder => optionsBuilder.UseSqlite("Data Source=db.db"));
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
